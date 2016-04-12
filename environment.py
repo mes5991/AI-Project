@@ -71,11 +71,11 @@ class Environment():
                 i = random.choice(colInd)
                 j = random.choice(rowInd)
             #Add robot to environment matrix
-            # envMatrix[i][j] = 2
-            envMatrix[8][7] = 2
+            envMatrix[i][j] = 2
+            # envMatrix[8][7] = 2
             #Store robot world location
-            # self.robotsLocation.append([i, j])
-            self.robotsLocation.append([8, 7])
+            self.robotsLocation.append([i, j])
+            # self.robotsLocation.append([8, 7])
             #Initilize robot object and append object to robots list
             self.robots.append(Robot())
         return envMatrix

@@ -4,7 +4,17 @@ import random
 import queue as q
 
 #Initilize environment (SIZE, Wall%, # of Robots)
-Env1 = Environment((100, 100), .1, 1)
+env = [[ 1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
+       [ 1,  0,  0,  1,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  0,  0,  0,  1],
+       [ 1,  0,  1,  0,  1,  0,  0,  0,  0,  1],
+       [ 1,  0,  0,  0,  0,  0,  1,  0,  0,  1],
+       [ 1,  1,  1,  1,  1,  1,  1,  1,  1,  1]]
+Env1 = Environment((100, 100), .25, 1)
 Env1.robots[0].updateMap(Env1.robotsLocation[0], Env1.envMatrix)
 Env1.robots[0].getGoals()
 

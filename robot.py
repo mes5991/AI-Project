@@ -179,15 +179,18 @@ class Robot():
 
     def getGoals(self):
         #Get neighbors of current location
+        # print(self.localMap)
+        # input("in get goals")
         neighbors = [[self.location[0] - 1, self.location[1]],
                      [self.location[0], self.location[1] + 1],
                      [self.location[0] + 1, self.location[1]],
                      [self.location[0], self.location[1] - 1]]
+
         for neighbor in neighbors:
             #Check if neighbor is within map range and not in visited cells
             iRange = (neighbor[0] >= 0) and (neighbor[0] <= (self.localMap.shape[0] - 1))
             jRange = (neighbor[1] >= 0) and (neighbor[1] <= (self.localMap.shape[1] - 1))
-            if (iRange) and (jRange) and (neighbor not in self.visitedCells):
+            if (iRange) and (jRange):
                 #Check if neighbor value is 0 which ensures a path to the potential goal
                 if (self.localMap[neighbor[0]][neighbor[1]] == 0):
                     #Get neighbors of the current neighbor
@@ -195,7 +198,10 @@ class Robot():
                                             [neighbor[0], neighbor[1] + 1],
                                             [neighbor[0] + 1, neighbor[1]],
                                             [neighbor[0], neighbor[1] - 1]]
+                    # print(neighborsOfNeighbors)
+                    # input('for loop')
                     for neighborNeighbor in neighborsOfNeighbors:
+
                         #Check if neighbor of neighbor is within map range
                         iRange = (neighborNeighbor[0] >= 0) and (neighborNeighbor[0] <= (self.localMap.shape[0] - 1))
                         jRange = (neighborNeighbor[1] >= 0) and (neighborNeighbor[1] <= (self.localMap.shape[1] - 1))
@@ -203,6 +209,8 @@ class Robot():
                             #Check if neighbor of neighbor is of value 3 ensuring that it has not been discovered yet
                             # if (self.localMap[neighborNeighbor[0]][neighborNeighbor[1]] == 3) and (neighborNeighbor not in self.goalsPut):
                             if (self.localMap[neighborNeighbor[0]][neighborNeighbor[1]] == 3) and (neighborNeighbor not in self.goalsList):
+                                # print(neighborNeighbor)
+                                # input('adding goal')
                                 self.goalsList.append(neighborNeighbor)
                                 #Add neighbor of neighbor and path to goals queue
                                 # self.goalsPut.append(neighborNeighbor)

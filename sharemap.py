@@ -84,13 +84,13 @@ def shareMap(robot1,robot2,dir1,dir2):
 
     # Return Values
     if dir1==2 and dir2==0:
-        return arr1,arr2
-    elif dir1==0 and dir2==2:
         return arr2,arr1
+    elif dir1==0 and dir2==2:
+        return arr1,arr2
     elif dir1==1 and dir2==3:
-        return np.transpose(arr1),np.transpose(arr2)
-    elif dir1==3 and dir2==1:
         return np.transpose(arr2),np.transpose(arr1)
+    elif dir1==3 and dir2==1:
+        return np.transpose(arr1),np.transpose(arr2)
     # 4 Ignore this comment
 
 # Test the code

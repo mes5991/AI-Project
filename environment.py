@@ -25,7 +25,7 @@ class Environment():
 
         if env == None:
             #create matirx of empty space
-            envMatrix = np.zeros(envSize)
+            envMatrix = np.zeros(envSize, int)
             colLength = envSize[0]
             rowLength = envSize[1]
             rowInd = np.arange(rowLength)

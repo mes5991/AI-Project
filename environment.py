@@ -28,6 +28,7 @@ class Environment():
         # 1 = wall or object
         # 2 = robot
 
+<<<<<<< HEAD
         #create matirx of empty space
         envMatrix = np.zeros(envSize)
         colLength = envSize[0]
@@ -41,6 +42,15 @@ class Environment():
         for i in range(1, colLength - 1):
             envMatrix[i, 0] = 1
             envMatrix[i, rowLength - 1] = 1
+=======
+        if env == None:
+            #create matirx of empty space
+            envMatrix = np.zeros(envSize)
+            colLength = envSize[0]
+            rowLength = envSize[1]
+            rowInd = np.arange(rowLength)
+            colInd = np.arange(colLength)
+>>>>>>> parent of bdb03cb... Multi-robot search without map sharing
 
         #add random walls
         wallCount = 0

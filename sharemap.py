@@ -135,11 +135,11 @@ def shareMap(robot1,robot2,dir1):
 
 # Test the code
 # Uncomment to test the following case
-robot1=np.array([[0,1,3,3],[0,0,0,0],[1,1,0,3],[3,3,2,3],[0,0,0,0],[3,3,3,1],[3,3,3,3],[0,0,0,1]])
+'''robot1=np.array([[0,1,3,3],[0,0,0,0],[1,1,0,3],[3,3,2,3],[0,0,0,0],[3,3,3,1],[3,3,3,3],[0,0,0,1]])
 robot2=np.array([[0,0,0,0],[0,0,2,0],[1,1,0,3],[1,1,1,1]])
 (array1,array2,loc1,loc2)=shareMap(robot1,robot2,[1,0])
 print("Array1\n",array1,loc1)
-print("Array2\n",array2,loc2)
+print("Array2\n",array2,loc2)'''
 
 # Uncomment to test the following case
 '''robot1=np.array([[0,1,3,3],[0,0,0,0],[1,1,2,0],[3,1,0,3],[0,0,1,0]])

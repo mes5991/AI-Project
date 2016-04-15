@@ -79,3 +79,9 @@ class Environment():
             #Initilize robot object and append object to robots list
             self.robots.append(Robot())
         return envMatrix
+
+    def getSharingInfo(self, index, direction):
+        botLocation = self.robotsLocation[index]
+        neighborLocation = [botLocation[0] + direction[0], botLocation[1] + direction[1]]
+        neighborIndex = self.robotsLocation.index(neighborLocation)
+        return (self.robots[neighborIndex].localMap, neighborIndex)

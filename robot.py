@@ -15,8 +15,27 @@ class Robot():
         self.goal = [0,0]
         self.goalsList = []
         self.currentPath = q.Queue()
+        self.botNeighbors = []
+
+    def updateRelativeData(self, di, dj):
+        self.goal = [self.goal[0] + di, self.goal[1] + dj]
+        goalsToBeRemoved = []
+        for i in range(len(self.goalsList)):
+            self.goalsList[i] = [self.goalsList[i][0] + di, self.goalsList[i][1] + dj]
+            if self.localMap[self.goalsList[i][0]][self.goalsList[i][1]] != 3:
+                goalsToBeRemoved.append(self.goalsList[i])
+        for goal in goalsToBeRemoved:
+            self.goalsList.remove(goal)
+        print(self.goalsList)
+        input("goals list")
+        tempPath = []
+        while not self.currentPath.empty():
+            tempPath.append(self.currentPath.get())
+        for i in tempPath:
+            self.currentPath.put([i[0] + di, i[1] + dj])
 
     def updateMap(self, worldLocation, envMatrix):
+        self.botNeighbors = []
         worldNeighbors = self.getWorldNeighbors(worldLocation)
         neighborValues = []
         for neighbor in worldNeighbors:
@@ -25,6 +44,7 @@ class Robot():
             neighborValue = envMatrix[neighborI][neighborJ]
             if neighborValue == 2:
                 neighborValue = 0
+                self.botNeighbors.append(neighbor)
             neighborValues.append(neighborValue)
         self.updateNorth(neighborValues[0])
         self.updateEast(neighborValues[1])

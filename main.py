@@ -3,6 +3,7 @@ from robot import searchAStar
 import random
 import queue as q
 import numpy as np
+from sharemap_Matt import shareMap
 
 np.set_printoptions(threshold = np.nan, suppress = True, linewidth = 300)
 
@@ -13,7 +14,7 @@ newInfo = []
 stuck = []
 
 #Initilize environment (SIZE, Wall%, # of Robots)
-World = Environment((20,20), .50, robotCount)
+World = Environment((10,10), .0, robotCount)
 print("World Map:\n", World.envMatrix)
 for i in range(robotCount):
     World.robots[i].updateMap(World.robotsLocation[i], World.envMatrix)
@@ -57,15 +58,61 @@ while (False in stuck):
 
         """Movement update"""
         if not stuck[i]:
+            #Get the next move from the current path
             nextMove = World.robots[i].currentPath.get()
             #Only move to the next location if it is empty
             if World.robots[i].localMap[nextMove[0]][nextMove[1]] == 0:
+                #Get direction of movement [0,1], [0,-1], [1,0], [-1,0]
                 direction = [nextMove[0] - World.robots[i].location[0], nextMove[1] - World.robots[i].location[1]]
+                #Move in local map
                 World.robots[i].move(nextMove)
+                #Move in world map
                 World.updateEnvMatrix(i, direction)
+                #Update local map with new sensor information
                 World.robots[i].updateMap(World.robotsLocation[i], World.envMatrix)
+
+                """Share Map Functions"""
+                for botNeighbor in World.robots[i].botNeighbors:
+                    print("Current Local Map\n", World.robots[i].localMap)
+                    print("Current location:", World.robots[i].location)
+                    #get direction of neighbor bot wrt current bot
+                    direction = [botNeighbor[0] - World.robotsLocation[i][0], botNeighbor[1] - World.robotsLocation[i][1]]
+                    #get neighbor bot index and local map for sharing
+                    (neighborMap, neighborIndex) = World.getSharingInfo(i, direction)
+                    print("neighborMap\n", World.robots[neighborIndex].localMap)
+                    print("neighbor location:", World.robots[neighborIndex].location)
+                    print("World Map\n", World.envMatrix)
+                    #Store old relative locations
+                    oldBotLocalLocation = World.robots[i].location
+                    oldNeighborLocalLocation = World.robots[neighborIndex].location
+                    #Share map information. Directly modify robot maps and locations if necessary
+                    (World.robots[i].localMap, World.robots[neighborIndex].localMap, World.robots[i].location, World.robots[neighborIndex].location) = shareMap(World.robots[i].localMap, neighborMap, direction)
+                    print("New Current bot map\n", World.robots[i].localMap)
+                    print("New neighbor map\n", World.robots[neighborIndex].localMap)
+                    print("Current location:", World.robots[i].location)
+                    print("neighbor location:", World.robots[neighborIndex].location)
+                    print(np.subtract(World.robots[i].localMap, World.robots[neighborIndex].localMap))
+                    input("Waiting...")
+                    #Get change in location from before map sharing to after map sharing
+                    (bot_di, bot_dj) = (abs(oldBotLocalLocation[0] - World.robots[i].location[0]), abs(oldBotLocalLocation[1] - World.robots[i].location[1]))
+                    (neighbor_di, neighbor_dj) = (abs(oldNeighborLocalLocation[0] - World.robots[neighborIndex].location[0]), abs(oldNeighborLocalLocation[1] - World.robots[neighborIndex].location[1]))
+                    #Update goal, goals list, and current path according to the change in location
+                    World.robots[i].updateRelativeData(bot_di, bot_dj)
+                    World.robots[neighborIndex].updateRelativeData(neighbor_di, neighbor_dj)
+                    #Combine goals list into one mutual goal list
+                    mutualGoalList = []
+                    for goal in World.robots[i].goalsList:
+                        if goal not in mutualGoalList:
+                            mutualGoalList.append(goal)
+                    for goal in World.robots[neighborIndex].goalsList:
+                        if goal not in mutualGoalList:
+                            mutualGoalList.append(goal)
+                    World.robots[i].goalsList = mutualGoalList
+                    World.robots[neighborIndex].goalsList = mutualGoalList
+                #Get new goals based on the previous movement
                 World.robots[i].getGoals()
             else:
+                #If the next move is not empty, ignore the above code, and run A* again.
                 newInfo[i] = True
     if trace:
         print("World Map:\n", World.envMatrix)

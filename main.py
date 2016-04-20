@@ -12,9 +12,10 @@ np.set_printoptions(threshold = np.nan, suppress = True, linewidth = 300)
 robotCount = 2
 newInfo = []
 stuck = []
+chosenLocations = True
 
 #Initilize environment (SIZE, Wall%, # of Robots)
-World = Environment((10,10), .0, robotCount)
+World = Environment((10,10), .0, robotCount, chosenLocations)
 print("World Map:\n", World.envMatrix)
 for i in range(robotCount):
     World.robots[i].updateMap(World.robotsLocation[i], World.envMatrix)
@@ -22,6 +23,7 @@ for i in range(robotCount):
     newInfo.append(False)
     stuck.append(False)
     print("Local Map", i,"\n", World.robots[i].localMap)
+input("waiting...")
 
 trace = False
 count = 0
@@ -92,7 +94,7 @@ while (False in stuck):
                     print("Current location:", World.robots[i].location)
                     print("neighbor location:", World.robots[neighborIndex].location)
                     print(np.subtract(World.robots[i].localMap, World.robots[neighborIndex].localMap))
-                    input("Waiting...")
+                    # input("Waiting...")
                     #Get change in location from before map sharing to after map sharing
                     (bot_di, bot_dj) = (abs(oldBotLocalLocation[0] - World.robots[i].location[0]), abs(oldBotLocalLocation[1] - World.robots[i].location[1]))
                     (neighbor_di, neighbor_dj) = (abs(oldNeighborLocalLocation[0] - World.robots[neighborIndex].location[0]), abs(oldNeighborLocalLocation[1] - World.robots[neighborIndex].location[1]))

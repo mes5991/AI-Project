@@ -11,16 +11,16 @@ def shareMap(botA_Map, botB_Map, direction):
     """Use frame difference to insert rows or columns into the respective map"""
     frameDifference = [botB_wrtA[0] - botB_wrtB[0], botB_wrtA[1] - botB_wrtB[1]]
     if frameDifference[0] > 0: #Insert row(s) into bot B
-        for i in range(abs(frameDifference[0])):
+        for i in range(abs(int(frameDifference[0]))):
             botB_Map = np.insert(botB_Map, 0, 3, axis = 0)
     elif frameDifference[0] < 0: #Insert row(s) into bot A
-        for i in range(abs(frameDifference[0])):
+        for i in range(abs(int(frameDifference[0]))):
             botA_Map = np.insert(botA_Map, 0, 3, axis = 0)
     if frameDifference[1] > 0: #Insert column(s) into bot B
-        for i in range(abs(frameDifference[1])):
+        for i in range(abs(int(frameDifference[1]))):
             botB_Map = np.insert(botB_Map, 0, 3, axis = 1)
     elif frameDifference[1] < 0: #Insert column(s) into bot A
-        for i in range(abs(frameDifference[1])):
+        for i in range(abs(int(frameDifference[1]))):
             botA_Map = np.insert(botA_Map, 0, 3, axis = 1)
 
     # print("botA_Map\n", botA_Map)
@@ -34,16 +34,16 @@ def shareMap(botA_Map, botB_Map, direction):
 
     """Use size difference to append rows or columns into the respective map"""
     if sizeDifference[0] > 0: #Append row(s) onto bot B
-        for i in range(abs(sizeDifference[0])):
+        for i in range(abs(int(sizeDifference[0]))):
             botB_Map = np.insert(botB_Map, botB_Map.shape[0], 3, axis = 0)
     elif sizeDifference[0] < 0: #Append row(s) onto bot A
-        for i in range(abs(sizeDifference[0])):
+        for i in range(abs(int(sizeDifference[0]))):
             botA_Map = np.insert(botA_Map, botA_Map.shape[0], 3, axis = 0)
     if sizeDifference[1] > 0: #Append col(s) onto bot B
-        for i in range(abs(sizeDifference[1])):
+        for i in range(abs(int(sizeDifference[1]))):
             botB_Map = np.insert(botB_Map, botB_Map.shape[1], 3, axis = 1)
     if sizeDifference[1] < 0: #Append col(s) onto bot A
-        for i in range(abs(sizeDifference[1])):
+        for i in range(abs(int(sizeDifference[1]))):
             botA_Map = np.insert(botA_Map, botA_Map.shape[1], 3, axis = 1)
 
     """Maps are now the same size. They now need to merge together"""

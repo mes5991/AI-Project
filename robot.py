@@ -27,7 +27,7 @@ class Robot():
         for goal in goalsToBeRemoved:
             self.goalsList.remove(goal)
         print(self.goalsList)
-        input("goals list")
+        # input("goals list")
         tempPath = []
         while not self.currentPath.empty():
             tempPath.append(self.currentPath.get())

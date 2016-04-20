@@ -169,3 +169,4 @@ print("Robot2\n",robot2)
 print("Array1\n",array1,loc1)
 print("Array2\n",array2,loc2)'''
 
+

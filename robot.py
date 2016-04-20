@@ -20,21 +20,25 @@ class Robot():
     def updateRelativeData(self, di, dj):
         self.goal = [self.goal[0] + di, self.goal[1] + dj]
         goalsToBeRemoved = []
+        # print("dj", dj)
+        # print(self.goalsList)
+        # input("goals list")
         for i in range(len(self.goalsList)):
             self.goalsList[i] = [self.goalsList[i][0] + di, self.goalsList[i][1] + dj]
             if self.localMap[self.goalsList[i][0]][self.goalsList[i][1]] != 3:
                 goalsToBeRemoved.append(self.goalsList[i])
         for goal in goalsToBeRemoved:
             self.goalsList.remove(goal)
-        print(self.goalsList)
-        # input("goals list")
         tempPath = []
         while not self.currentPath.empty():
             tempPath.append(self.currentPath.get())
         for i in tempPath:
             self.currentPath.put([i[0] + di, i[1] + dj])
 
-    def updateMap(self, worldLocation, envMatrix):
+    def updateMap(self, worldLocation, envMatrix, robNum):
+        # print("Robot Number", i)
+        # print("Goals List", World.robots[i].goalsList)
+        # input("I like turtles")
         self.botNeighbors = []
         worldNeighbors = self.getWorldNeighbors(worldLocation)
         neighborValues = []
@@ -49,7 +53,7 @@ class Robot():
         self.updateNorth(neighborValues[0])
         self.updateEast(neighborValues[1])
         self.updateSouth(neighborValues[2])
-        self.updateWest(neighborValues[3])
+        self.updateWest(neighborValues[3], robNum)
 
     def updateNorth(self, neighborValue):
         if self.location[0] == 0: #if local location is at top of matrix
@@ -99,7 +103,7 @@ class Robot():
         if (self.location[0] + 1 == self.localMap.shape[0] - 1) and (neighborValue == 0):
             self.localMap = np.insert(self.localMap, self.localMap.shape[0], 3, axis = 0)
 
-    def updateWest(self, neighborValue):
+    def updateWest(self, neighborValue, robNum):
         bumpCount = 0
         if self.location[1] == 0:
             self.localMap = np.insert(self.localMap, 0, 3, axis = 1)
@@ -124,8 +128,12 @@ class Robot():
             tempPath.reverse()
             for i in tempPath:
                 self.currentPath.put([i[0], i[1] + 1])
+            # print('goals list:', self.goalsList)
             for i in range(0, len(self.goalsList)):
                 self.goalsList[i][1] += 1
+            # print('robot number:', robNum)
+            # print('goals list:', self.goalsList)
+            # input('waiting')
 
     def getWorldNeighbors(self, worldLocation):
         worldNeighbors = [[worldLocation[0] - 1, worldLocation[1]],

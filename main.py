@@ -7,6 +7,7 @@ from sharemap_Matt import shareMap
 import copy
 import pygame
 from sys import exit
+import csv
 
 """Code below this line is code for multi-robot search"""
 
@@ -17,32 +18,45 @@ BLUE = (0, 25, 250)
 RED = (255, 0, 0)
 PURPLE = (160, 32, 240)
 
-worldSize = (50, 50)
-robotCount = 7
+
+worldSize = (100, 100)
+wallPerc = 0.3
+robotCount = 15
 newInfo = []
 stuck = []
 chosenLocations = False
 done = False
-
+trace = False
+render = True
+importWorld = False
+count = 0
 pygame.init()
-infoObject = pygame.display.Info()
-M = robotCount*500
-screen1 = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
-screen1.fill(WHITE)
-pygame.display.set_caption("World Map")
-# worldScale = (infoObject.current_w * .25, infoObject.current_h * .25)
-z = worldSize[0] / 10  # set the scaling factor based on screen size
 
-#Initilize environment (SIZE, Wall%, # of Robots)
-World = Environment(worldSize, .0, robotCount, chosenLocations)
-print("World Map:\n", World.envMatrix)
-for i in range(robotCount):
+if render:
+    infoObject = pygame.display.Info()
+    screen1 = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
+    screen1.fill(WHITE)
+    pygame.display.set_caption("Simulation")
+    z = worldSize[0] / 20  # set the scaling factor based on screen size
+    y = worldSize[0] / 20
+
+if importWorld:
+    envFile = 'C:/Users/Matthew/Documents/WPI/Spring 16/AI/Project/AI-Project/map50.csv'
+    with open(envFile, 'r') as dest_f:
+        data_iter = csv.reader(dest_f, delimiter = ',', quotechar = '"')
+        data = [data for data in data_iter]
+    env = np.asarray(data)
+    env = env.astype(np.int)
+    World = Environment(worldSize, wallPerc, robotCount, env)
+else:
+    World = Environment(worldSize, wallPerc, robotCount)
+# print("World Map:\n", World.envMatrix)
+for i in range(len(World.robots)):
     World.robots[i].updateMap(World.robotsLocation[i], World.envMatrix, i)
     World.robots[i].getGoals()
     newInfo.append(False)
     stuck.append(False)
-    print("Local Map", i,"\n", World.robots[i].localMap)
-# input('top')
+    # print("Local Map", i,"\n", World.robots[i].localMap)
 
 def renderMap(mapMatrix, worldMatrixSize, k=None):
     for i in range(mapMatrix.shape[0]):
@@ -50,14 +64,22 @@ def renderMap(mapMatrix, worldMatrixSize, k=None):
             m = i * z
             n = j * z
             if k != None:
+                m = i * y
+                n = j * y
                 if k > 2:
                     m += (z * worldMatrixSize[1] * (k - 3))
                     n += (z * worldMatrixSize[0])
                 else:
                     m += (z * worldMatrixSize[1] * (k + 1))
-
-
-            if mapMatrix[i, j] == 1.0:
+                if mapMatrix[i, j] == 1.0:
+                    pygame.draw.rect(screen1, BLACK, [m, n, y, y])
+                elif mapMatrix[i, j] == 2.0:
+                    pygame.draw.rect(screen1, PURPLE, [m, n, y, y])
+                elif mapMatrix[i, j] == 3.0:
+                    pygame.draw.rect(screen1, BLUE, [m, n, y, y])
+                else:
+                    pygame.draw.rect(screen1, WHITE, [m, n, y, y])
+            elif mapMatrix[i, j] == 1.0:
                 pygame.draw.rect(screen1, BLACK, [m, n, z, z])
             elif mapMatrix[i, j] == 2.0:
                 pygame.draw.rect(screen1, PURPLE, [m, n, z, z])
@@ -70,12 +92,16 @@ def renderMap(mapMatrix, worldMatrixSize, k=None):
     clock = pygame.time.Clock()
     clock.tick(200000)
 
-trace = False
-count = 0
+
 while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
     #Run loop while any robots are not stuck
     while (False in stuck):
-        for i in range(robotCount):
+        count += 1
+        for i in range(len(World.robots)):
 
             """Goals Update"""
             #If the current goal is no longer unknown, get new goal. Goal initializes as origin.
@@ -87,7 +113,9 @@ while not done:
                         #Do we have new info but havnt reached the current goal?
                         if not newInfo[i]:
                             #Get new goal from goals list
-                            World.robots[i].goal = World.robots[i].getNextGoal()
+                            World.robots[i].goal = World.robots[i].getNextGoalManhattan()
+                            # World.robots[i].goal = World.robots[i].getNextGoalGreedyAStar()
+                            # World.robots[i].goal = World.robots[i].getNextGoalGreedy()
                         newInfo[i] = False
                         #Is the current goal still unknown?
                         if World.robots[i].localMap[World.robots[i].goal[0]][World.robots[i].goal[1]] == 3:
@@ -145,20 +173,29 @@ while not done:
                         World.robots[neighborIndex].goalsList = copy.deepcopy(mutualGoalList)
                     #Get new goals based on the previous movement
                     World.robots[i].getGoals()
-                    renderMap(World.robots[i].localMap, World.envMatrix.shape, i)
+                    # if len(World.robots[i].botNeighbors) > 0:
+                    #     if len(World.robots[i].goalsList) > 0:
+                    #         World.robots[i].goal = random.choice(World.robots[i].goalsList)
+                    #     newInfo[i] = True
+                    #     World.robots[i].botNeighbors = []
+                    if render and i == 0:
+                        renderMap(World.robots[i].localMap, World.envMatrix.shape, i)
                 else:
                     #If the next move is not empty, ignore the above code, and run A* again.
                     newInfo[i] = True
         if trace:
             print("World Map:\n", World.envMatrix)
-            for i in range(robotCount):
+            for i in range(len(World.robots)):
                 print("Local Map", i,"\n", World.robots[i].localMap)
             input('waiting')
-        renderMap(World.envMatrix, World.envMatrix.shape)
+        if render:
+            renderMap(World.envMatrix, World.envMatrix.shape)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-print("World Map:\n", World.envMatrix)
-for i in range(robotCount):
-    print("Local Map", i,"\n", World.robots[i].localMap)
+    done = True
+# print("World Map:\n", World.envMatrix)
+# for i in range(len(World.robots)):
+#     print("Local Map", i,"\n", World.robots[i].localMap)
+print(count)

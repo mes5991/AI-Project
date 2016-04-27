@@ -185,9 +185,94 @@ class Robot():
                                 #Add neighbor of neighbor and path to goals queue
                                 # self.goalsPut.append(neighborNeighbor)
                                 # self.goals.put(neighborNeighbor)
+    def getNextGoalGreedyAStar(self):
+        currentGoals = []
+        currentDiscovery = 0
+        for goal in self.goalsList:
+            di = abs(self.location[0] - goal[0])
+            dj = abs(self.location[1] - goal[1])
+            if (di <= 2) and (dj <= 2):
+                Search = searchAStar(self.location, goal, self.localMap)
+                solution = Search.solve()
+                discovery = 0
+                if solution != None:
+                    for step in solution:
+                        neighbors = [[goal[0] - 1, goal[1]],
+                                     [goal[0], goal[1] + 1],
+                                     [goal[0] + 1, goal[1]],
+                                     [goal[0], goal[1] - 1]]
+                        for neighbor in neighbors:
+                            iRange = (neighbor[0] >= 0) and (neighbor[0] <= (self.localMap.shape[0] - 1))
+                            jRange = (neighbor[1] >= 0) and (neighbor[1] <= (self.localMap.shape[1] - 1))
+                            if (iRange) and (jRange):
+                                if self.localMap[neighbor[0]][neighbor[1]] == 3:
+                                    discovery += 1
+                    if len(currentGoals) == 0:
+                        currentGoals = [goal]
+                        currentDiscovery = discovery
+                    elif currentDiscovery < discovery:
+                        currentGoals = [goal]
+                        currentDiscovery = discovery
+                    elif currentDiscovery == discovery:
+                        currentGoals.append(goal)
+                else:
+                    return self.getNextGoalManhattan()
+        if len(currentGoals) == 0:
+            return self.getNextGoalManhattan()
+        if len(currentGoals) > 1:
+            manhattan = None
+            currentGoal = None
+            for goal in currentGoals:
+                di = abs(goal[0] - self.location[0])
+                dj = abs(goal[1] - self.location[1])
+                if (manhattan == None) or (di + dj < manhattan):
+                    manhattan = di + dj
+                    currentGoal = goal
+        else:
+            currentGoal = currentGoals[0]
+        self.goalsList.remove(currentGoal)
+        return currentGoal
 
 
-    def getNextGoal(self):
+
+    def getNextGoalGreedy(self):
+        greedyMin = 0
+        greedyGoals = []
+        for goal in self.goalsList:
+            greedyCount = 0
+            neighbors = [[goal[0] - 1, goal[1]],
+                         [goal[0], goal[1] + 1],
+                         [goal[0] + 1, goal[1]],
+                         [goal[0], goal[1] - 1]]
+            for neighbor in neighbors:
+                iRange = (neighbor[0] >= 0) and (neighbor[0] <= (self.localMap.shape[0] - 1))
+                jRange = (neighbor[1] >= 0) and (neighbor[1] <= (self.localMap.shape[1] - 1))
+                if (iRange) and (jRange):
+                    if self.localMap[neighbor[0]][neighbor[1]] == 3:
+                        greedyCount += 1
+            if len(greedyGoals) == 0:
+                greedyGoals.append(goal)
+                greedyMin = greedyCount
+            elif greedyMin < greedyCount:
+                greedyGoals = [goal]
+                greedyMin = greedyCount
+            elif greedyMin == greedyCount:
+                greedyGoals.append(goal)
+        if len(greedyGoals) > 1:
+            manhattan = None
+            currentGoal = None
+            for goal in greedyGoals:
+                di = abs(goal[0] - self.location[0])
+                dj = abs(goal[1] - self.location[1])
+                if (manhattan == None) or (di + dj < manhattan):
+                    manhattan = di + dj
+                    currentGoal = goal
+        else:
+            currentGoal = greedyGoals[0]
+        self.goalsList.remove(currentGoal)
+        return currentGoal
+
+    def getNextGoalManhattan(self):
         #Initilize temporary manhattan distance and goal selection
         manhattan = None
         currentGoal = None

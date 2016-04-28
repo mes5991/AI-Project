@@ -16,6 +16,7 @@ class Robot():
         self.goalsList = []
         self.currentPath = q.Queue()
         self.botNeighbors = []
+        self.distanceTraveled = 0
 
     def updateRelativeData(self, di, dj):
         self.goal = [self.goal[0] + di, self.goal[1] + dj]
@@ -146,6 +147,7 @@ class Robot():
         self.localMap[self.location[0]][self.location[1]] = 0
         self.location = newLocation
         self.localMap[self.location[0]][self.location[1]] = 2
+        self.distanceTraveled += 1
 
     def getGoals(self):
         #Get neighbors of current location
